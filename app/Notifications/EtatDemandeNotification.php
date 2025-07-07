@@ -48,7 +48,7 @@ class EtatDemandeNotification extends Notification
             $mail->line('Raison du rejet : ' . $this->raison);
         }
 
-        $mail->action('Accéder à votre espace', url('/dashboard'))
+        $mail->action('Accéder à votre espace', url('user/dashboard'))
              ->line('Merci d’utiliser notre service.');
 
         return $mail;
