@@ -1,16 +1,29 @@
 FROM php:8.2-apache
 
+# Installer les dépendances
 RUN apt-get update && apt-get install -y \
     zip unzip curl git libzip-dev libpq-dev libonig-dev libxml2-dev \
     && docker-php-ext-install pdo pdo_pgsql zip mbstring bcmath
 
+# Activer mod_rewrite pour Laravel
+RUN a2enmod rewrite
+
+# Installer Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Copier les fichiers du projet
 COPY . /var/www/html
 
 WORKDIR /var/www/html
-RUN chown -R www-data:www-data /var/www/html && a2enmod rewrite
 
-EXPOSE 8000
+# Donner les bons droits
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-CMD composer install && php artisan key:generate && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8000
+# Installer les dépendances PHP (hors dev)
+RUN composer install --no-dev --optimize-autoloader
+
+# Expose port 80 (Apache)
+EXPOSE 80
+
+# Démarrage par défaut d'Apache (gère le serveur HTTP)
+CMD ["apache2-foreground"]
