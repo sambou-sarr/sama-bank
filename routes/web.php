@@ -12,23 +12,10 @@ use App\Http\Controllers\UserController;
 use App\Models\Transaction;
 
 // Page d'accueil publique
+
 Route::get('/', function () {
-    return view('welcome');
-})->name('home');
-
-// Test envoi mail
-Route::get('/test-mail', function () {
-    try {
-        Mail::raw('Test de mail via Mailtrap', function ($message) {
-            $message->to('sarrsambou04@gmail.com')
-                    ->subject('Test SMTP Mailtrap');
-        });
-        return 'Mail envoyé avec succès !';
-    } catch (\Exception $e) {
-        return 'Erreur : ' . $e->getMessage();
-    }
+    return view('user.index');
 });
-
 // Routes pour utilisateurs authentifiés (profil)
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

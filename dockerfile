@@ -27,3 +27,4 @@ EXPOSE 80
 
 # Démarrage par défaut d'Apache (gère le serveur HTTP)
 CMD ["apache2-foreground"]
+RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
