@@ -62,7 +62,9 @@
                             Mot de passe oublié ?
                         </a>
                     @endif
-
+                    <a class="text-warning" href="/register">
+                        Inscription
+                    </a>
                     <button type="submit" class="btn btn-outline-light">
                         Connexion
                     </button>
