@@ -31,20 +31,19 @@ class DemandeController extends Controller
         // Valide les données envoyées
         $request->validate([
             'type_compte' => 'required|in:courant,epargne',
-            // autres validations si besoin
         ]);
 
         $user = Auth::user();
 
         // 1. Créer d'abord le compte bancaire (avec solde 0, statut 'en_attente')
         $compte = new CompteBancaire();
-        $compte->numb_compte = $this->genererNumeroCompte();  // méthode à créer
-        $compte->code_banque = '12345';                       // fixe ou dynamique
+        $compte->numb_compte = $this->genererNumeroCompte();  
+        $compte->code_banque = '12345';                       
         $compte->code_guichet = '12345';
-        $compte->cle_RIB = $this->genererCleRIB();            // méthode à créer
+        $compte->cle_RIB = $this->genererCleRIB();            
         $compte->solde = 0;
         $compte->type_compte = $request->type_compte;
-        $compte->statut = 'en_attente';                        // compte pas encore validé
+        $compte->statut = 'en_attente';                        
         $compte->user_id = $user->id;
         $compte->save();
 
@@ -58,12 +57,12 @@ class DemandeController extends Controller
         $demande->save();
 
         // 3. Créer la carte liée à ce compte bancaire
-        $carte = new CarteBancaire(); // ou le nom de ton modèle Carte
+        $carte = new CarteBancaire(); 
         $carte->compte_id = $compte->id;
-        $carte->numero_carte = $this->genererNumeroCarte(); // méthode à créer pour générer un numéro de carte
-        $carte->date_exp = now()->addYears(3);               // date d'expiration dans 3 ans par exemple
-        $carte->CVV = rand(100, 999);                        // un CVV aléatoire à 3 chiffres
-        $carte->statut = 'active';                           // ou 'en_attente' selon ta logique
+        $carte->numero_carte = $this->genererNumeroCarte(); 
+        $carte->date_exp = now()->addYears(3);               
+        $carte->CVV = rand(100, 999);                        
+        $carte->statut = 'active';                          
         $carte->save();
         // Trouver l'admin (ou tous les admins)
         $admins = \App\Models\User::where('role', 'admin')->get();

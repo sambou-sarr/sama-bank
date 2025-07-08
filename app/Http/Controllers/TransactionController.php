@@ -17,7 +17,7 @@ class TransactionController extends Controller
     {
         $transactions = Transaction::where('compte_source_id', $id)->orWhere('compte_dest_id', $id)->orderBy('date', 'desc')->get();
 
-        return view('user.historique', compact('transactions'));
+        return view('user.historique',  compact('transactions', 'id'));
     }
    
      // Exécuter le transfert
@@ -89,20 +89,20 @@ class TransactionController extends Controller
 
     public function mesTransactions()
     {   
-         $user = Auth::user();
+        $user = Auth::user();
 
-    $compteIds = $user->comptes_bancaires->pluck('id');
+        $compteIds = $user->comptes_bancaires->pluck('id');
 
-    if ($compteIds->isEmpty()) {
-        return view('user.transactions', ['transactions' => collect()]);
-    }
+        if ($compteIds->isEmpty()) {
+            return view('user.transactions', ['transactions' => collect()]);
+        }
 
-    $transactions = Transaction::whereIn('compte_source_id', $compteIds)
-        ->orWhereIn('compte_dest_id', $compteIds)
-        ->latest()
-        ->paginate(10);
+        $transactions = Transaction::whereIn('compte_source_id', $compteIds)
+            ->orWhereIn('compte_dest_id', $compteIds)
+            ->latest()
+            ->paginate(10);
 
-    return view('user.transactions', compact('transactions'));
+        return view('user.transaction', compact('transactions'));
     }
 
 

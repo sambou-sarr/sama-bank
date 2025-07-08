@@ -8,8 +8,6 @@ use App\Http\Controllers\OperationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
-
-
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
@@ -50,6 +48,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->group(function () {
     Route::post('/demande/{id}/rejeter', [AdminController::class, 'rejeter'])->name('demande.rejeter');
     Route::put('/demande/{id}/action', [AdminController::class, 'traiterAction'])->name('demande.action');
     Route::get('/transactions', [AdminController::class, 'transactions'])->name('admin.transactions');
+    Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
 });
 
 // Routes pour utilisateurs authentifiés (espace client)

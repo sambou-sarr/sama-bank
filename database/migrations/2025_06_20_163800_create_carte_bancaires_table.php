@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('carte_bancaires', function (Blueprint $table) {
             $table->id();
-            $table->integer('numero_carte');
+            $table->string('numero_carte', 30); // ou 30 pour être large
             $table->date('date_exp');
             $table->string('CVV');
             $table->string('statut');

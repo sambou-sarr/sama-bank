@@ -172,8 +172,11 @@
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('demande') ? 'active' : '' }}" href="{{ route('demande') }}">Comptes</a>
             </li>
-              <li class="nav-item">
+            <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('admin.transactions') ? 'active' : '' }}" href="{{ route('admin.transactions') }} ">Transactions</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('admin.users') ? 'active' : '' }}" href="{{ route('admin.users') }} ">Utilisateurs</a>
             </li>
         </ul>
     </div>

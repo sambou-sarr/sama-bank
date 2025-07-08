@@ -62,6 +62,11 @@
         color: #721c24;
     }
 </style>
+@if ($errors->has('statut'))
+    <div class="alert alert-warning">
+        {{ $errors->first('statut') }}
+    </div>
+@endif
 
 <div class="container py-5">
     <h2 class="dashboard-header">Détails du compte bancaire</h2>

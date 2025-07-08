@@ -84,7 +84,7 @@
     @endif
 </div>
 
-<a href="{{ route('transactions.pdf', $transaction->compte_source_id) }}" class="btn-pdf" target="_blank">
+<a href="{{ route('transactions.pdf', $id) }}" class="btn-pdf" target="_blank">
     Télécharger la liste en PDF
 </a>
 

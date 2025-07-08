@@ -11,9 +11,17 @@ use Illuminate\Support\Facades\Auth;
 
 class OperationController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+     private function verifierCompteValide($compte)
+    {
+        if ($compte->statut !== 'valider') {
+            return redirect()->back()->withErrors([
+                'statut' => 'Ce compte n’est pas encore validé. Aucune opération n’est autorisée.'
+            ]);
+        }
+        return true; 
+    }
+
+
     public function index()
     {
         $comptes = CompteBancaire::all();
@@ -23,7 +31,6 @@ class OperationController extends Controller
     public function show($id)
     {
         $compte = CompteBancaire::findOrFail($id);
-        // Tu peux vérifier que le compte appartient bien à l'utilisateur connecté ici
 
         if ((int)$compte->user_id !== Auth::id()) {
             abort(403);
@@ -40,6 +47,11 @@ class OperationController extends Controller
         if ((int)$compte->user_id !== Auth::id()) {
             abort(403);
         }
+          //   la redirection 
+        $validation = $this->verifierCompteValide($compte);
+        if ($validation !== true) {
+            return $validation; 
+        }
 
         return view('user.transfert', compact('compte'));
     }
@@ -50,9 +62,14 @@ class OperationController extends Controller
     {
         
         $compte = CompteBancaire::findOrFail($id);
-
+        
         if ((int)$compte->user_id !== Auth::id()) {
             abort(403);
+        }
+      //   la redirection 
+        $validation = $this->verifierCompteValide($compte);
+        if ($validation !== true) {
+            return $validation; 
         }
 
         return view('user.depot', compact('compte'));
@@ -67,6 +84,11 @@ public function executerDepot(Request $request, $id)
     if ((int)$compte->user_id !== Auth::id()) {
         abort(403);
     }
+         //   la redirection 
+        $validation = $this->verifierCompteValide($compte);
+        if ($validation !== true) {
+            return $validation; 
+        }
 
     $request->validate([
         'montant' => ['required', 'numeric', 'min:1'],
@@ -105,6 +127,11 @@ public function executerDepot(Request $request, $id)
         if ((int)$compte->user_id !== Auth::id()) {
             abort(403);
         }
+             //   la redirection 
+        $validation = $this->verifierCompteValide($compte);
+        if ($validation !== true) {
+            return $validation; 
+        }
 
         return view('user.retrait', compact('compte'));
     }
@@ -118,6 +145,11 @@ public function executerDepot(Request $request, $id)
         // Vérifie que l'utilisateur connecté est bien propriétaire du compte
         if ((int) $compte->user_id !== Auth::id()) {
             abort(403);
+        }
+             //   la redirection 
+        $validation = $this->verifierCompteValide($compte);
+        if ($validation !== true) {
+            return $validation; 
         }
 
         // Validation du montant
@@ -154,9 +186,6 @@ public function executerDepot(Request $request, $id)
             return back()->withErrors(['error' => 'Une erreur est survenue pendant le retrait.']);
         }
 }
-
-
-   
 
 
 

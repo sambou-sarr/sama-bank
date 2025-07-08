@@ -56,6 +56,11 @@ class AdminController extends Controller
         return view('admin.transactions', compact('transactions'));
     }
 
+  public function users()
+    {
+        $users = User::latest()->paginate(10); // 10 par page
+        return view('admin.user', compact('users'));
+    }
 
     public function traiterAction(Request $request, $id)
     {
