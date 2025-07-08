@@ -57,11 +57,6 @@
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center">
-                    @if (Route::has('password.request'))
-                        <a class="text-warning" href="{{ route('password.request') }}">
-                            Mot de passe oublié ?
-                        </a>
-                    @endif
                     <a class="text-warning" href="/register">
                         Inscription
                     </a>
