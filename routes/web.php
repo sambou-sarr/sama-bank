@@ -8,15 +8,7 @@ use App\Http\Controllers\OperationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
-use App\Models\Transaction;
 
-
-use Illuminate\Support\Facades\Artisan;
-
-Route::get('/refresh-migrations', function () {
-    Artisan::call('migrate:refresh');
-    return 'Migrations rafraîchies';
-});
 
 // Page d'accueil publique
 Route::get('/', function () {

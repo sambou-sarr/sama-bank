@@ -8,6 +8,7 @@ use App\Models\Transaction;
 use App\Models\User;
 use App\Notifications\EtatDemandeNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
@@ -27,7 +28,7 @@ class AdminController extends Controller
                 'admins' => User::where('role', 'admin')->count(),
                 'comptes' => CompteBancaire::count(),
                 'transactions' => Transaction::count(),
-                'soldeTotal' => CompteBancaire::sum('solde'),
+                'soldeTotal' => DB::table('compte_bancaires')->select(DB::raw('SUM(CAST(solde AS numeric)) as total'))->value('total'),
                 'transactionsJour' => Transaction::whereDate('created_at', now()->toDateString())->count(),
                 'comptesactifs' => CompteBancaire::where('statut', 'valider')->count()
             ],
