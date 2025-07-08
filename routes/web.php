@@ -12,9 +12,23 @@ use App\Models\Transaction;
 
 use Illuminate\Support\Facades\Artisan;
 
-Route::get('/run-migrations', function () {
-    Artisan::call('migrate', ['--force' => true]);
-    return 'Migrations exécutées avec succès';
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+
+Route::get('/create-admin', function () {
+    $admin = User::updateOrCreate(
+        ['email' => 'sarrsambou03@gmail.com'],
+        [
+            'nom' => 'sarr',
+            'prenom' => 'sambou',
+            'telephone' => '772476160',
+            'role' => 'admin',
+            'email_verified_at' => now(),
+            'password' => Hash::make('12345678'),
+        ]
+    );
+
+    return 'Admin créé ou mis à jour !';
 });
 
 // Page d'accueil publique
