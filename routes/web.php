@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CarteController;
 use App\Http\Controllers\DemandeController;
@@ -11,8 +10,14 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use App\Models\Transaction;
 
-// Page d'accueil publique
+use Illuminate\Support\Facades\Artisan;
 
+Route::get('/run-migrations', function () {
+    Artisan::call('migrate', ['--force' => true]);
+    return 'Migrations exécutées avec succès';
+});
+
+// Page d'accueil publique
 Route::get('/', function () {
     return view('user.index');
 });
