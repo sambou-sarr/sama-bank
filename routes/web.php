@@ -10,25 +10,12 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use App\Models\Transaction;
 
+
 use Illuminate\Support\Facades\Artisan;
 
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-
-Route::get('/create-admin', function () {
-    $admin = User::updateOrCreate(
-        ['email' => 'sarrsambou03@gmail.com'],
-        [
-            'nom' => 'sarr',
-            'prenom' => 'sambou',
-            'telephone' => '772476160',
-            'role' => 'admin',
-            'email_verified_at' => now(),
-            'password' => Hash::make('12345678'),
-        ]
-    );
-
-    return 'Admin créé ou mis à jour !';
+Route::get('/refresh-migrations', function () {
+    Artisan::call('migrate:refresh');
+    return 'Migrations rafraîchies';
 });
 
 // Page d'accueil publique

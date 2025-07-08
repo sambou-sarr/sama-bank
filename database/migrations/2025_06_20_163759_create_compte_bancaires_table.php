@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('code_banque');
             $table->string('code_guichet');
             $table->string('cle_RIB');
-            $table->string('solde');
+            $table->integer('solde');
             $table->string('type_compte');
             $table->string('statut');
             $table->string('user_id');
