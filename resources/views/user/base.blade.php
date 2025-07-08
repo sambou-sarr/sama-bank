@@ -160,7 +160,7 @@
 
 <!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg navbar-dark px-4" style="background-color: #1e3a34; font-size: 1.5rem;">
-    <a class="navbar-brand logo" href="#"><span class="fw-bold text-warning">Sama Bank</a><br><br>
+    <a class="navbar-brand logo" href="{{ route('user.dashboard') }}"><span class="fw-bold text-warning">Sama Bank</a><br><br>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
     </button>
