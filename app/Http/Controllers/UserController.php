@@ -16,23 +16,23 @@ use Illuminate\Support\Facades\Auth;
             //
         }
 
-public function dashboard()
-{
-    $user = Auth::user();
-    $comptes = $user->comptes; // relation hasMany
-    $totalSolde = $comptes->sum('solde');
-    $compteIds = $comptes->pluck('id');
+        public function dashboard()
+        {
+            $user = Auth::user();
+            $comptes = $user->comptes; // relation hasMany
+            $totalSolde = $comptes->sum('solde');
+            $compteIds = $comptes->pluck('id');
 
-    $dernieresTransactions = Transaction::where(function ($query) use ($compteIds) {
-        $query->whereIn('compte_source_id', $compteIds)
-              ->orWhereIn('compte_dest_id', $compteIds);
-    })
-    ->orderByDesc('date')
-    ->take(5)
-    ->get();
+            $dernieresTransactions = Transaction::where(function ($query) use ($compteIds) {
+                $query->whereIn('compte_source_id', $compteIds)
+                    ->orWhereIn('compte_dest_id', $compteIds);
+            })
+            ->orderByDesc('date')
+            ->take(5)
+            ->get();
 
-    return view('user.dashboard', compact('user', 'comptes', 'totalSolde', 'dernieresTransactions'));
-}
+            return view('user.dashboard', compact('user', 'comptes', 'totalSolde', 'dernieresTransactions'));
+        }
 
 
 
