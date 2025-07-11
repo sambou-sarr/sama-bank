@@ -28,7 +28,9 @@ class AdminController extends Controller
                 'admins' => User::where('role', 'admin')->count(),
                 'comptes' => CompteBancaire::count(),
                 'transactions' => Transaction::count(),
-                'soldeTotal' => DB::table('compte_bancaires')->select(DB::raw('SUM(CAST(solde AS numeric)) as total'))->value('total'),
+               'soldeTotal' => DB::table('compte_bancaires')
+                ->select(DB::raw("SUM(CAST(solde  AS DECIMAL(10,2))) as total"))
+                ->value('total'),
                 'transactionsJour' => Transaction::whereDate('created_at', now()->toDateString())->count(),
                 'comptesactifs' => CompteBancaire::where('statut', 'valider')->count()
             ],

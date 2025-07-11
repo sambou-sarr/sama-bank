@@ -77,49 +77,57 @@ class OperationController extends Controller
     // Exécuter dépôt
   
     public function executerDepot(Request $request, $id)
-    {
-        $compte = CompteBancaire::findOrFail($id);
+{
+    $compte = CompteBancaire::findOrFail($id);
 
-        if ((int)$compte->user_id !== Auth::id()) {
-            abort(403);
-        }
-            //   la redirection 
-            $validation = $this->verifierCompteValide($compte);
-            if ($validation !== true) {
-                return $validation; 
-            }
-
-        $request->validate([
-            'montant' => ['required', 'numeric', 'min:1'],
-        ]);
-
-        DB::beginTransaction();
-
-        try {
-            // Mise à jour du solde
-            $compte->solde += $request->montant;
-            $compte->save();
-
-            // Enregistrement dans l’historique des transactions
-            $transaction = new Transaction();
-            $transaction->type_operation = 'depot';
-            $transaction->montant = $request->montant;
-            $transaction->date = Carbon::now();
-            $transaction->compte_source_id = $compte->id;
-            $transaction->compte_dest_id = null; 
-            $transaction->save();
-            // envoie notification 
-             $user = $transaction->compte_source_id ->compte->user;
-             $user->notify(new OperationEffectuee('dépôt', $request->montant));
-
-            DB::commit();
-
-            return redirect()->route('compte.details', $compte->id)->with('success', 'Dépôt effectué avec succès.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->withErrors(['error' => 'Une erreur est survenue pendant le dépôt.']);
-        }
+    // Vérifie que l'utilisateur est propriétaire du compte
+    if ((int)$compte->user_id !== Auth::id()) {
+        abort(403);
     }
+
+    // Vérifie si le compte est validé
+    $validation = $this->verifierCompteValide($compte);
+    if ($validation !== true) {
+        return $validation;
+    }
+
+    // Validation du montant
+    $request->validate([
+        'montant' => ['required', 'numeric', 'min:1'],
+    ]);
+
+    DB::beginTransaction();
+
+    try {
+        // Mise à jour du solde
+        $compte->solde += $request->montant;
+        $compte->save();
+
+        // Enregistrement dans l’historique des transactions
+        $transaction = new Transaction();
+        $transaction->type_operation = 'depot';
+        $transaction->montant = $request->montant;
+        $transaction->date = Carbon::now();
+        $transaction->compte_source_id = $compte->id;
+        $transaction->compte_dest_id = null;
+        $transaction->save();
+
+        // Envoi de notification
+        $user = $compte->user; // ✅ relation correcte
+        if ($user) {
+            $user->notify(new OperationEffectuee('dépôt', $request->montant));
+        }
+
+        DB::commit();
+
+        return redirect()->route('compte.details', $compte->id)->with('success', 'Dépôt effectué avec succès.');
+    } catch (\Exception $e) {
+        DB::rollBack();
+
+        return back()->withErrors(['error' => 'Une erreur est survenue pendant le dépôt.']);
+    }
+}
+
 
     // Afficher formulaire retrait
     public function afficherFormulaireRetrait($id)
