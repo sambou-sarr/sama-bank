@@ -62,7 +62,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/compte/{id}/cloture', [DemandeController::class, 'cloture'])->name('demande.cloture');
 
     // Liste des comptes utilisateur
-    Route::get('/user/compte', [OperationController::class, 'index'])->name('liste_compte');
+    Route::get('/user/compte/{id}', [OperationController::class, 'index'])->name('liste_compte');
 
     // Carte bancaire PDF
     Route::get('/compte/{id}/carte/pdf', [CarteController::class, 'download'])->name('carte.pdf');

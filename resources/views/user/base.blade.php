@@ -167,13 +167,14 @@
 
     <!-- Liens centrés -->
     <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+      @auth
         <ul class="navbar-nav mb-2 mb-lg-0">
             <li class="nav-item me-4">
                 <a class="nav-link {{ request()->routeIs('user.dashboard') ? 'active' : '' }}" href="{{ route('user.dashboard') }}">Accueil</a>
             </li>
-            <li class="nav-item me-4">
-                <a class="nav-link {{ request()->routeIs('liste_compte') ? 'active' : '' }}" href="{{ route('liste_compte') }}">Comptes</a>
-            </li>
+              <li class="nav-item me-4">
+                  <a class="nav-link {{ request()->routeIs('liste_compte') ? 'active' : '' }}" href="{{ route('liste_compte', Auth::user()->id ) ?? null }}">Comptes</a>
+              </li>
             <li class="nav-item me-4">
                 <a class="nav-link {{ request()->routeIs('compte.transaction') ? 'active' : '' }}" href="{{ route('compte.transaction') }}">Mes Transaction </a>
             </li>
@@ -181,6 +182,8 @@
                 <a class="nav-link {{ request()->routeIs('profile.edit') ? 'active' : '' }}" href="{{ route('profile.edit') }}">Profile</a>
             </li>
         </ul>
+      @endauth
+
     </div>
 
     <!-- Dropdown profil/déconnexion -->

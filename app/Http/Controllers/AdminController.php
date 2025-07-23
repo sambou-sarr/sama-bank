@@ -54,13 +54,15 @@ class AdminController extends Controller
   
     public function transactions()
     {
-        $transactions = Transaction::latest()->paginate(10); // 10 par page
+        //list de  10 par page
+        $transactions = Transaction::latest()->paginate(10); 
         return view('admin.transactions', compact('transactions'));
     }
 
   public function users()
     {
-        $users = User::latest()->paginate(10); // 10 par page
+        //list de  10 par page
+        $users = User::latest()->paginate(10); 
         return view('admin.user', compact('users'));
     }
 
@@ -81,7 +83,7 @@ class AdminController extends Controller
             if ($demande->compte_id) {
                 $compte = CompteBancaire::find($demande->compte_id);
                 if ($compte) {
-                    $compte->statut = 'valider'; // ou tout autre statut logique
+                    $compte->statut = 'valider'; 
                     $compte->save();
                 }
             }
@@ -94,7 +96,7 @@ class AdminController extends Controller
             if ($demande->compte_id) {
                 $compte = CompteBancaire::find($demande->compte_id);
                 if ($compte) {
-                    $compte->statut = 'rejeter'; // ou 'rejeté', selon ton système
+                    $compte->statut = 'rejeter'; 
                     $compte->save();
                 }
             }
