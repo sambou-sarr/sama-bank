@@ -23,8 +23,8 @@ class OperationController extends Controller
 
 
     public function index($id)
-    {
-        $comptes = CompteBancaire::find($id);
+    { 
+        $comptes = CompteBancaire::where('user_id', $id)->get();
        return view("user.mes_compte",compact('comptes'));
     }
     
