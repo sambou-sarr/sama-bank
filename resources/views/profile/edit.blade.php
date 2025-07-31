@@ -82,7 +82,7 @@
 
                         <div class="mb-3">
                             <label for="name" class="form-label"><span class="fw-bold text-white">Nom</label>
-                            <input type="text" name="name" id="name" class="form-control"
+                            <input type="text" name="nom" id="nom" class="form-control"
                                    value="{{ old('name', $user->nom) }}" required>
                         </div>
 

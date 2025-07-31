@@ -4,11 +4,19 @@
 <div class="container py-5">
     <h2 class="text-warning mb-4">Faire un retrait</h2>
 
-    @if (session('error'))
-        <div class="alert alert-danger">{{ session('error') }}</div>
-    @endif
+    {{-- Message de succès --}}
     @if (session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    {{-- Message d’erreur général (limite de retraits) --}}
+    @if ($errors->has('error'))
+        <div class="alert alert-danger">{{ $errors->first('error') }}</div>
+    @endif
+
+    {{-- Message d’erreur de validation (montant requis, etc.) --}}
+    @if ($errors->has('montant'))
+        <div class="alert alert-danger">{{ $errors->first('montant') }}</div>
     @endif
 
     <form action="{{ route('compte.retrait.executer', $compte->id) }}" method="POST">

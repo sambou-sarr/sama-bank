@@ -39,7 +39,6 @@ class OperationController extends Controller
         return view('user.espace_compte', compact('compte'));
     }
 
-    // Afficher le formulaire de transfert
     public function afficherFormulaireTransfert($id)
     {
         $compte = CompteBancaire::findOrFail($id);
@@ -47,7 +46,6 @@ class OperationController extends Controller
         if ((int)$compte->user_id !== Auth::id()) {
             abort(403);
         }
-          //   la redirection 
         $validation = $this->verifierCompteValide($compte);
         if ($validation !== true) {
             return $validation; 
@@ -57,7 +55,6 @@ class OperationController extends Controller
     }
    
 
-    // Afficher formulaire dépôt
     public function afficherFormulaireDepot($id)
     {
         $compte = CompteBancaire::findOrFail($id);
@@ -65,7 +62,6 @@ class OperationController extends Controller
         if ((int)$compte->user_id !== Auth::id()) {
             abort(403);
         }
-      //   la redirection 
         $validation = $this->verifierCompteValide($compte);
         if ($validation !== true) {
             return $validation; 
@@ -74,24 +70,20 @@ class OperationController extends Controller
         return view('user.depot', compact('compte'));
     }
 
-    // Exécuter dépôt
   
     public function executerDepot(Request $request, $id)
 {
     $compte = CompteBancaire::findOrFail($id);
 
-    // Vérifie que l'utilisateur est propriétaire du compte
     if ((int)$compte->user_id !== Auth::id()) {
         abort(403);
     }
 
-    // Vérifie si le compte est validé
     $validation = $this->verifierCompteValide($compte);
     if ($validation !== true) {
         return $validation;
     }
 
-    // Validation du montant
     $request->validate([
         'montant' => ['required', 'numeric', 'min:1'],
     ]);
@@ -99,11 +91,9 @@ class OperationController extends Controller
     DB::beginTransaction();
 
     try {
-        // Mise à jour du solde
         $compte->solde += $request->montant;
         $compte->save();
 
-        // Enregistrement dans l’historique des transactions
         $transaction = new Transaction();
         $transaction->type_operation = 'depot';
         $transaction->montant = $request->montant;
@@ -112,8 +102,7 @@ class OperationController extends Controller
         $transaction->compte_dest_id = null;
         $transaction->save();
 
-        // Envoi de notification
-        $user = $compte->user; // ✅ relation correcte
+        $user = $compte->user; 
         if ($user) {
             $user->notify(new OperationEffectuee('dépôt', $request->montant));
         }
@@ -129,7 +118,6 @@ class OperationController extends Controller
 }
 
 
-    // Afficher formulaire retrait
     public function afficherFormulaireRetrait($id)
     {
         $compte = CompteBancaire::findOrFail($id);
@@ -137,7 +125,6 @@ class OperationController extends Controller
         if ((int)$compte->user_id !== Auth::id()) {
             abort(403);
         }
-             //   la redirection 
         $validation = $this->verifierCompteValide($compte);
         if ($validation !== true) {
             return $validation; 
@@ -146,57 +133,71 @@ class OperationController extends Controller
         return view('user.retrait', compact('compte'));
     }
 
-    // Exécuter retrait
 
-    public function executerRetrait(Request $request, $id)
-    {
-        $compte = CompteBancaire::findOrFail($id);
+ public function executerRetrait(Request $request, $id)
+{
+    $compte = CompteBancaire::findOrFail($id);
 
-        // Vérifie que l'utilisateur connecté est bien propriétaire du compte
-        if ((int) $compte->user_id !== Auth::id()) {
-            abort(403);
-        }
-             //   la redirection 
-        $validation = $this->verifierCompteValide($compte);
-        if ($validation !== true) {
-            return $validation; 
-        }
+    if ((int) $compte->user_id !== Auth::id()) {
+        abort(403);
+    }
 
-        // Validation du montant
-        $request->validate([
-            'montant' => ['required', 'numeric', 'min:1'],
-        ]);
+    $validation = $this->verifierCompteValide($compte);
+    if ($validation !== true) {
+        return $validation; 
+    }
 
-        // Vérifie si le solde est suffisant
-        if ($compte->solde < $request->montant) {
-            return back()->withErrors(['error' => 'Solde insuffisant pour effectuer ce retrait.']);
-        }
+    // Validation du montant
+    $request->validate([
+        'montant' => ['required', 'numeric', 'min:1'],
+    ]);
 
-        DB::beginTransaction();
+    // Limite des retraits pour comptes épargne
+    if ($compte->type_compte == "epargne") {
+        $retraitsCeMois = Transaction::where('compte_source_id', $compte->id)
+            ->where('type_operation', 'retrait')
+            ->whereMonth('date', now()->month)
+            ->whereYear('date', now()->year)
+            ->count();
 
-        try {
-            // Mise à jour du solde
-            $compte->solde -= $request->montant;
-            $compte->save();
-
-            // Enregistrement dans l’historique des transactions
-            $transaction = new Transaction();
-            $transaction->type_operation = 'retrait';
-            $transaction->montant = $request->montant;
-            $transaction->date = Carbon::now();
-            $transaction->compte_source_id = $compte->id;
-            $transaction->compte_dest_id = null; // Aucun compte destinataire
-            $transaction->save();
-            // envoie notification 
-            $user = $transaction->compte_source_id ->compte->user;
-            $user->notify(new OperationEffectuee('retrait', $request->montant));
-            DB::commit();
-
-            return redirect()->route('compte.details', $compte->id)->with('success', 'Retrait effectué avec succès.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->withErrors(['error' => 'Une erreur est survenue pendant le retrait.']);
+        if ($retraitsCeMois >= 3) {
+            return back()->withErrors(['error' => 'Vous avez déjà effectué 3 retraits ce mois-ci pour ce compte épargne.']);
         }
     }
+
+    // Vérifie si le solde est suffisant
+    if ($compte->solde < $request->montant) {
+        return back()->withErrors(['error' => 'Solde insuffisant pour effectuer ce retrait.']);
+    }
+
+    DB::beginTransaction();
+
+    try {
+        // Mise à jour du solde
+        $compte->solde -= $request->montant;
+        $compte->save();
+
+        // Enregistrement dans l’historique des transactions
+        $transaction = new Transaction();
+        $transaction->type_operation = 'retrait';
+        $transaction->montant = $request->montant;
+        $transaction->date = Carbon::now();
+        $transaction->compte_source_id = $compte->id;
+        $transaction->compte_dest_id = null;
+        $transaction->save();
+
+        // Envoie notification
+        $user = $compte->user; // Correction ici
+        $user->notify(new OperationEffectuee('retrait', $request->montant));
+
+        DB::commit();
+
+        return redirect()->route('compte.details', $compte->id)->with('success', 'Retrait effectué avec succès.');
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return back()->withErrors(['error' => 'Une erreur est survenue pendant le retrait.']);
+    }
+}
+
 
 }

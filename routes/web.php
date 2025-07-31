@@ -27,6 +27,13 @@ Route::get('/create-admin', function () {
     return 'Admin créé ou mis à jour !';
 });
 
+Route::get('/test-https', function() {
+    return [
+        'https' => request()->isSecure(),
+        'header_x_forwarded_proto' => request()->header('X-Forwarded-Proto'),
+    ];
+});
+
 // Page d'accueil publique
 Route::get('/', function () {
     return view('user.index');
