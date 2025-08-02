@@ -10,6 +10,21 @@
    <link href="{{ asset('css/app.css') }}" rel="stylesheet" />
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+<!-- Manifest -->
+<link rel="manifest" href="{{ asset('manifest.json') }}">
+<!-- Icons for PWA -->
+<link rel="icon" type="image/png" sizes="192x192" href="{{ asset('icons/icon-192x192.png') }}">
+<link rel="apple-touch-icon" href="{{ asset('icons/icon-192x192.png') }}">
+<!-- Theme -->
+<meta name="theme-color" content="#0d6efd">
+<!-- Service Worker registration -->
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/serviceworker.js')
+      .then(reg => console.log('Service Worker registered!', reg))
+      .catch(err => console.error('Service Worker registration failed:', err));
+  }
+</script>
 
 <style>
         body {
